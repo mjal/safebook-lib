@@ -1,0 +1,121 @@
+* Safebook
+Safebook est un réseau social cryptographique.
+Son but est privacy and anonymity
+
+Chaque utilisateur possède un [[coffre-fort.org][coffre fort]].
+
+Il donne accès à sa [[carte-identite.org][carte d'identité cryptographique]].
+
+Elle permet l'envoi de messages [[message-publique.org][publiques]] et [[message-prive.org][privés]].
+
+* Coffre fort
+
+Chaque utilisateur du réseau possède un *coffre fort cryptographique*.
+
+C'est une liste de mots comme ceci:
+#+BEGIN_QUOTE
+jealous evoke they breeze
+brass fatal explain unhappy
+disagree rice shine inch
+page trip garment
+#+END_QUOTE
+
+C'est une donnée personnelle qui doit être gardé précieusement et qui ne doit pas être partagé.
+
+Il garantie mathématiquement l'accès et l'utilisation du compte.
+
+Il permet la génération d'une [[carte-identite.org][carte d'identité cryptographique]].
+
+[TECHNIQUE]
+Dans PGP, chaque utilisateur partage une clé publique de signature.
+Elle signe une ou plusieurs clés publiques de chiffrement. 
+
+Dans safebook l'identité est un grand nombre aléatoire.
+C'est la racine qui permet de générer (et d'organiser) un grand nombre de clé.
+Parmis ces clés, des addresses peuvent être générés et communiqués pour permettre à d'autres personnes de nous contacter.
+
+[REFERENCE]
+(SEED)
+>>>>>
+-- PUBLIC ADDRESS
+-- OTHER \o/
+
+[TODO]
+- Check Bitcoin minkey
+- Make wordlist exemple not working
+
+* Carte d'identité
+
+Chaque utilisateur du réseau possède une *carte d'identité cryptographique*.
+
+Elle est générée à partir du [[coffre-fort.org][coffre fort]] cryptographique.
+
+C'est une addresse qui permet d'envoyer et de recevoir des [[message-prive.org][messages privés]] et d'authentifier des [[message-publique.org][messages publiques]].
+
+Exemple:
+Ou un QR code sur un T-shirt, mug, etc
+
+[TECHNIQUE]
+Nous utiliseront une clé Curve25519 pour DH ET la signatures.
+(Le papier [[https://eprint.iacr.org/2011/615][On the Joint Security of Encryption and Signature in EMV]] [[[https://crypto.stackexchange.com/questions/3260/using-same-keypair-for-diffie-hellman-and-signing][2]]] prouve la sécurité d'un tel usage dans des conditions similaires.
+
+
+* Addresse cryptographique (should be renamed to address publique)
+
+[DIDACTIQUE]:
+Une addresse cryptographique identifie un utilisateur et permet de lui envoyer un message cryptographique ou publique
+
+[TECHNIQUE]:
+Une addresse cryptographique est une clé publique ecdh en base58 qui permet de fabriquer un message à envoyer
+
+[REFERENCE]:
+{
+  pubkey: SBThisisASampleSBAddressDoNotUseIt
+}
+
+[QUESTION]:
+Devons nous ajouter une composante de signature en plus de la composante DH ?
+Alors on aurai des
+- addresses de signature (ecdsa)
+- addresses secretes (ecdh)
+
+Si on peut utiliser la même clé pour chiffrer et signer alors parfait
+Sinon l'addresse "principale" pourrait etre la clé de signature, et sur
+le site on pourrait avoir un message avec une clé de chiffrement signée
+
+[NOTE]:
+Vanity: Des addresses commencant par SB
+
+* Message privé
+
+Un message privé est envoyé à la [[carte-identite.org][carte d'identité]] du récépteur et nécessite l'accès au [[coffre-fort.org][coffre fort]] pour pouvoir le lire.
+
+* Message publique
+
+Un *message publique* est un message authentifié par le possesseur d'une [[carte-identite.org][carte d'identité]].
+
+* Following/Friendship
+
+{
+  follower:  SBThisisASampleSBAddressDoNotUseIt,
+  following: SBThisisASampleSBAddressDoNotUseIt
+  signature: Base64EncodedBinaryData # = sign(following/*payload*/, follower/*source key*/)
+}
+
+[QUESTION]
+Anonymous following ?
+
+* Addresse privée (shadow address)
+
+Une addresse privee est une addresse jetable
+qui permette a l'utilisateur de recevoir un message
+sans etre identifié ou (surtout) de stocker des donnée
+(arbitrary data, following, messages)
+
+On peut generer un flux virtuellement infini d'addresses jetable
+(derivation successive (bip32 ou bip39)
+ou deroulement d'un algo de flux)
+
+== Group based private address
+This is a private address associated with a group.
+Only group members have access to this address.

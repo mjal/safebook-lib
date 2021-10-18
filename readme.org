@@ -1,0 +1,23 @@
+* [[doc/user.org][Documentation utilisateur]]
+
+* [[doc/technical.org][Documentation technique]]
+
+* Explication:
+
+Chaque utilisateur possède un [[coffre-fort.org][coffre fort]].
+
+C'est la source de sa [[carte-identite.org][carte d'identité cryptographique]].
+
+Les utilisateurs peuvent envoyer des messages [[message-publique.org][publiques]] et [[message-prive.org][privés]].
+
+** Draft
+
+*** Se passer des serveurs (en théorie et en pratique) ==
+
+L'objectif est de se passer des serveurs pour gérer la communication entre
+utilisateurs. Pour se faire on utilise la cryptographie pour chiffrer de bout
+en bout et verifier l'autenticité des messages.
+
+Le chiffrement authentifé et les signatures font office de table de relation
+
+*** Etre compatible avec ActivityPub et agir comme un serveur AP et donc etre pair-a-pair ==

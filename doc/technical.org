@@ -1,0 +1,115 @@
+* Safebook
+
+** Addresses
+
+  Addresses in safebook are 32-bit integers encoded with base58.
+
+  Exemple:
+  - SBThisisASampleSBAddressDoNotUseIt
+  - ThisCanBeAUserorAGroupShadowAddres
+
+  Address represent a user or a private group. (A private group in safebook
+  is really just a shared user)
+
+  There is two kind of addresses: *direct* and *shadow*.
+
+  *Direct addresses* identify a user or group and solely allow oneself to send
+  encrypted message or to authetify publications.
+
+  They represent a curve25519/ed25519 public key.
+
+  For a user, they are derived directly from the safebook passphrase.
+
+  They often start with SB, sb, Sb or sB (vanity addresses) to differentiate
+  them from other addresses (bitcoin, ...)
+
+  *Shadow addresses* aims to tackle the problem of anonymity.
+
+  They represent a random 32-bit integer (and thus rarely start with SB)
+
+  - 1-to-1 private messages shadow address are derived from the ecdh common message/key and thus can be recomputed by both parties.
+
+    It is a common way to send a encrypted message to a user without leaking too much metadata
+
+    To listen to shadow address you must follow this person
+
+  - group shadow address
+
+    They represent alias for the group name
+
+  - one-time generated 
+
+  Exemple:
+  - SBThisisASampleSBAddressDoNotUseIt
+  - ThisCanBeAUserorAGroupShadowAddres
+
+** Messages
+A message consist of a sender address (and optionally a receiver address) and some data.
+NOTE: Data can be hidden (should be deciphered) ?
+
+** Identity message (ID card, user)
+{
+  pubkey/address: SBThisisASampleSBAddressDoNotUseIt
+  data: {
+    name: MyUser,
+    logo/etc
+    // See to have a complete ActivityPub actor
+  }
+  signature: LDS_JFDS+LFLFDS== # sign(data,address)
+}
+NOTE: only for unmutable date
+
+** Private message
+{ sender, receiver, message }
+or { group, data: {} } in a group or
+
+** Authentified public message
+A public message is a public authentified message (like twitter)
+{
+  pubkey/address: SBThisisASampleSBAddressDoNotUseIt
+  data: {
+    message: {}
+  }
+  signature: LDS_JFDS
+}
+Note that public message can only be done with public addresses and not private addresses
+
+** Friendship/(Following)
+A user can give his friendship to another user 
+
+** Private group invitation
+This is a message from a group user to a user, sharing the
+group private key
+{
+  (sender: SBThisisASampleSBAddressDoNotUseIt optional)
+  group: SBThisisASampleSBAddressDoNotUseIt
+  receiver: SBThisisASampleSBAddressDoNotUseIt
+  data: {the_shared_group_private_key}
+}
+We can also imagine
+{
+  sender, receiver, data: {hidden_group, hidden_private_key}
+}
+
+** Tree of interest
+The tree of interest is a way to share what address range
+we are interested in without sharing the exact addresses
+
+We use it to ask the federation or another user what messages we
+are interested in without sharing the exact addresses
+
+For exemple if we are SBMyself and follow SBUser1 and SBUser2
+and we are interested is 2 users * nb shadow advance * 2 (incoming,
+outcoming) shadow addresses 
+we can craft a tree for this addresses
+S
+|
+B
+|   |   |   |   |
+k   j   1   4   5
+| |         | |
+j r         3 N
+every leaf is for a address when listen
+** Account recomputation
+Encrypting keys and addresses tend to be generated and thus a safebook
+account is partially 
