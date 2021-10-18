@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "node test.js"
+    "test": "jest"
   },
   "author": "",
   "license": "ISC",
@@ -16,5 +16,8 @@
     "minimist": "^1.2.5",
     "tweetnacl": "^1.0.3",
     "tweetnacl-util": "^0.15.1"
+  },
+  "devDependencies": {
+    "jest": "^27.3.0"
   }
 }
