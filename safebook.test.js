@@ -2,6 +2,7 @@ safebook = require('./safebook')
 
 mnemonic         = "large intact option tackle document category faith tackle repair myth hint carpet"
 invalid_mnemonic = "large intact option tackle document category faith tackle repair myth hint faith"
+entropy          = "GCuEHFMuVYsHvyn4tTAUcYcbp9k2"
 address          = "sB2H5mvAXqKmvDkfKHvaZEbahSrNEwSRmjvwzqhrcKvZaXcqn"
 account1 = safebook.generate_account()
 account2 = safebook.generate_account()
@@ -11,15 +12,25 @@ alter = (a) => a[0]--
 test("Generate account", () => {
   account = safebook.generate_account()
   expect(account.mnemonic.split(" ")).toHaveLength(12)
-  expect([49,50].includes(account.address.length)).toBeTruthy()
+  expect([48,49,50].includes(account.address.length)).toBeTruthy()
 })
 
-test("Load account", () => {
+test("Load account from mnemonic", () => {
+  account = safebook.load_from_mnemonic(mnemonic)
+  expect(account.address).toBe(address)
+
   account = safebook.load(mnemonic)
   expect(account.address).toBe(address)
 
-  account = safebook.load(invalid_mnemonic)
-  expect(account).toBeUndefined()
+  expect(() => safebook.load(invalid_mnemonic)).toThrow()
+})
+
+test("Load account from entropy", () => {
+  account = safebook.load_from_entropy(entropy)
+  expect(account.address).toBe(address)
+
+  account = safebook.load(entropy)
+  expect(account.address).toBe(address)
 })
 
 test("Decode address", () => {

@@ -9,12 +9,18 @@ let safebook = {
   create: () => {
     return safebook.generate_vanity_account()
   },
-  load: (mnemonic) => {
+  load: (password) => {
+    if (bip39.validateMnemonic(password))
+      return safebook.load_from_mnemonic(password)
+    else // TODO: base58 test
+      return safebook.load_from_entropy(password)
+  },
+  load_from_mnemonic: (mnemonic) => {
     if (!bip39.validateMnemonic(mnemonic))
       return
     let account = {}
     account.mnemonic = mnemonic
-    account.entropy = bip39.mnemonicToEntropy(mnemonic)
+    account.entropy = safebook.encode(Buffer.from(bip39.mnemonicToEntropy(mnemonic), 'hex'))
     account.seed = bip39.mnemonicToSeedSync(mnemonic).slice(0,32)
     account.sign = nacl.sign.keyPair.fromSeed(account.seed)
     account.box  = ed2curve.convertKeyPair(account.sign)
@@ -23,9 +29,9 @@ let safebook = {
   },
   load_from_entropy: (entropy) => {
     let account = {}
-    account.entropy = safebook.decode(entropy)
-    account.mnemonic = bip39.entropyToMnemonic(mnemonic)
-    account.seed = bip39.mnemonicToSeedSync(mnemonic).slice(0,32)
+    account.entropy = entropy
+    account.mnemonic = bip39.entropyToMnemonic(Buffer.from(safebook.decode(account.entropy)).toString('hex'))
+    account.seed = bip39.mnemonicToSeedSync(account.mnemonic).slice(0,32)
     account.sign = nacl.sign.keyPair.fromSeed(account.seed)
     account.box  = ed2curve.convertKeyPair(account.sign)
     account.address = safebook.encode(account.sign.publicKey)
