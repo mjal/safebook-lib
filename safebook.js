@@ -5,15 +5,22 @@ const bip32     = require('bip32')
 const bip39     = require('bip39')
 const ed2curve  = require('ed2curve')
 
+lang = 'french'
+bip39.setDefaultWordlist(lang)
+
 let safebook = {
   create: () => {
-    return safebook.generate_vanity_account()
+    return safebook.generate_account()
   },
   load: (password) => {
     if (bip39.validateMnemonic(password))
       return safebook.load_from_mnemonic(password)
     else // TODO: base58 test
       return safebook.load_from_entropy(password)
+  },
+  load_from_entropy: (entropy) => {
+    let mnemonic = bip39.entropyToMnemonic(Buffer.from(safebook.decode(entropy)).toString('hex'))
+    return safebook.load_from_mnemonic(mnemonic)
   },
   load_from_mnemonic: (mnemonic) => {
     if (!bip39.validateMnemonic(mnemonic))
@@ -25,16 +32,7 @@ let safebook = {
     account.sign = nacl.sign.keyPair.fromSeed(account.seed)
     account.box  = ed2curve.convertKeyPair(account.sign)
     account.address = safebook.encode(account.sign.publicKey)
-    return account
-  },
-  load_from_entropy: (entropy) => {
-    let account = {}
-    account.entropy = entropy
-    account.mnemonic = bip39.entropyToMnemonic(Buffer.from(safebook.decode(account.entropy)).toString('hex'))
-    account.seed = bip39.mnemonicToSeedSync(account.mnemonic).slice(0,32)
-    account.sign = nacl.sign.keyPair.fromSeed(account.seed)
-    account.box  = ed2curve.convertKeyPair(account.sign)
-    account.address = safebook.encode(account.sign.publicKey)
+    account.name = safebook.name(account)
     return account
   },
   generate_account: () => {
@@ -46,6 +44,13 @@ let safebook = {
       if (['sb','sB','Sb','SB'].includes(account.address.substr(0,2)))
         return account
     }
+  },
+  name: (account) => {
+    let n = Buffer.from(safebook.decode(account.address).slice(0,4)).reduce((a,b) => a * Math.pow(2,8) + b, 0)
+    i1 = (n >> 0)   & (Math.pow(2,11) - 1)
+    i2 = (n >> 11)  & (Math.pow(2,11) - 1)
+    i3 = (n >> 22)  & (Math.pow(2,11) - 1)
+    return [i1, i2, i3].map(i => bip39.wordlists[lang][i])
   },
   encrypt: (account, address, message) => { // TODO: split into encrypt (low level : Uint8Array) and hide (high level : str)
     plaintext  = nacl.util.decodeUTF8(message)
